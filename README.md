@@ -181,7 +181,13 @@ describe("DELETE /api/todos/:todoId", () => {
 </details>
 
 :eyes: *No peaking at the solutions until you're done!*
-## Setting up Testing for our React Frontend
+
+## Setting up Component Testing with Jest for our React Frontend
+
+####------------ NEED Steps here
+
+
+## Setting up E2E Testing for our React Frontend
 
 #### What is Selenium?
 Selenium is a powerful tool commonly used for automating web browsers, particularly for testing web applications. React is a popular JavaScript library for building user interfaces, including web applications. Combining Selenium with a React application allows for automated testing of the user interface, ensuring functionality, performance, and user experience.
@@ -199,15 +205,15 @@ To begin, please open a new terminal window and navigate to the `/final-review/r
 4.  Create a `tests` folder in the `src` directory: `mkdir tests`
 5.  Within the new directory, make a subdirectory called `e2e`: `mkdir tests/e2e`, then create a new file called `selenium-todos.test.js`: `touch tests/e2e/selenium-todos.test.js` which will be our test file.
 
-## Dependency Setup
+## Selenium Dependency Setup
 In the `selenium-todos.test.js` file, we'll need to import `selenium-webdriver`.
 ```
 const selenium = require('selenium-webdriver');
 ```
 
-# Continue Selenium Here
+# Selenium Testing
 
-####-----------------------------------------------------------
+####------------ NEED Steps here
 
 ## Dockerize the Todo App (Note: shorten lesson, go over additional docker commands)
 
