@@ -197,13 +197,12 @@ To begin, please open a new terminal window and navigate to the `/final-review/r
     - Make sure your backend is running if your app isn't working, then `npm run start` in your frontend directory to confirm the app is working. NOTE: If you get a message that a port is in use, you can kill it with this command: `sudo kill -9 $(sudo lsof -t -i:3000)`.
     - After you've verified that everything works, run `CTRL+C` in the terminal to stop running the React app.
 4.  Create a `tests` folder in the `src` directory: `mkdir tests`
-5.  Within the new directory, make a subdirectory called `e2e`: `mkdir tests/e2e`, then create a new file called `App.test.js`: `touch tests/e2e/App.test.js` which will be our test file.
+5.  Within the new directory, make a subdirectory called `e2e`: `mkdir tests/e2e`, then create a new file called `selenium-todos.test.js`: `touch tests/e2e/selenium-todos.test.js` which will be our test file.
 
 ## Dependency Setup
-In the `App.test.js` file, we'll need to import a couple modules from the testing framework along with the component(s) that we want to test. Take the code from below then paste it in the test file:
+In the `selenium-todos.test.js` file, we'll need to import `selenium-webdriver`.
 ```
-import { render, fireEvent } from '@testing-library/react';
-import MyList from '../../src/MyList';
+const selenium = require('selenium-webdriver');
 ```
 
 # Continue Selenium Here
