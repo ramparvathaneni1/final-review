@@ -184,7 +184,13 @@ describe("DELETE /api/todos/:todoId", () => {
 
 ## Setting up Component Testing with Jest for our React Frontend
 
-Component testing, particularly in the context of front-end development and frameworks like React, plays a crucial role in ensuring the reliability, functionality, and user experience of individual components within an application. The primary objectives and benefits of component testing include:
+1. Create a `tests` folder in the `src` directory: `mkdir tests`
+2. Within the new directory, make a subdirectory called `components`: `mkdir tests/components`.
+3. Then create a new file called `App.test.js`: `touch tests/components/App.test.js` which will be our test file.
+
+Component testing, particularly in the context of front-end development and frameworks like React, plays a crucial role in ensuring the reliability, functionality, and user experience of individual components within an application. 
+
+The primary objectives and benefits of component testing include:
 
 - Ensuring Correct Behavior
 - Detecting Bugs Early
