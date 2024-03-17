@@ -184,8 +184,76 @@ describe("DELETE /api/todos/:todoId", () => {
 
 ## Setting up Component Testing with Jest for our React Frontend
 
-####------------ NEED Steps here
+Component testing, particularly in the context of front-end development and frameworks like React, plays a crucial role in ensuring the reliability, functionality, and user experience of individual components within an application. The primary objectives and benefits of component testing include:
 
+- Ensuring Correct Behavior
+- Detecting Bugs Early
+- Improving Code Quality
+- Facilitating Refactoring and Enhancements
+- Streamlining Development and Collaboration
+- Enhancing User Experience
+
+### Let's break down what each test does:
+
+1. Test 1: Verifying Header Text
+
+- This test checks that the MyList component renders a header with the specified text "Things I should stop procrastinating:".
+- It renders the MyList component with a prop theList that contains an array of to-do items (toDos).
+- getByRole fetches the first element with the semantic role of 'heading'.
+- expect and toHaveTextContent verify that the fetched element contains the correct text content.
+
+```js
+test('Header contains the text "Things I should stop procrastinating:"', () => {
+    const myList = render(<MyList theList={toDos} />);
+    const heading = myList.getByRole('heading');
+    expect(heading).toHaveTextContent('Things I should stop procrastinating:');
+});
+```
+
+2. Test 2: Adding an Item to the List
+
+- This test simulates adding a new to-do item ("Renew Passport") to the list.
+- It locates the input field by its placeholder text and the button by its text content.
+- fireEvent.change simulates typing into the input field. fireEvent.click simulates clicking the button.
+- waitFor is used to handle any asynchronous updates. Then it checks that the new item was added to the list by verifying the last item's text content.
+
+```js
+test('Entering text into text input and clicking "Add it!" button adds the item to the list', () => {
+    const myList = render(<MyList theList={toDos} />);
+    const input = myList.getByPlaceholderText('Type an item here');
+    const button = myList.getByText("Add it!");
+
+    fireEvent.change(input, { target: { value: "Renew Passport" } });
+    fireEvent.click(button);
+
+    waitFor(() => {
+        const list = myList.getByRole("list");
+        const items = within(list).queryAllByRole("listitem");
+        const lastItem = items[items.length - 1];
+
+        expect(lastItem).toHaveTextContent("Renew Passport");
+    });
+});
+```
+
+3. Test 3: Deleting All Items from the List
+
+- This test simulates clearing the to-do list by clicking a button labeled "Finished the list!".
+- After clicking the button, it checks that there are no items left in the list by looking for elements with the role "listitem" and expecting their count to be 0.
+
+```js
+test('Clicking on "Finished the list!" will delete all elements in the list', () => {
+    const myList = render(<MyList theList={toDos} />);
+    const button = myList.getByText("Finished the list!");
+
+    fireEvent.click(button);
+
+    const list = myList.queryAllByRole("listitem");
+    expect(list.length).toBe(0);
+});
+```
+
+To run the test use `npm run test` command.
 
 ## Setting up E2E Testing for our React Frontend
 
