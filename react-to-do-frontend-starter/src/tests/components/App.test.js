@@ -1,20 +1,43 @@
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import MyList from '../../MyList';
+const toDos = ['Finish Homework', 'Plan Vacation', 'Go to the Gym', 'Prepare Presentation',
+    'Clean the House', 'Organize Office', 'Repair Bike', 'Study for Exams', 'Renew Passport'];
 
-// Test to verify that the MyList component correctly renders its header
 test('Header contains the text "Things I should stop procrastinating:"', () => {
-    // The detailed implementation of this test will render the MyList component
-    // and then check if the header text content matches the expected string.
+    const myList = render(<MyList theList={toDos} />);
+    const heading = myList.getByRole('heading');
+    expect(heading).toHaveTextContent('Things I should stop procrastinating:');
 });
 
-// Test to ensure that adding a new item through the form correctly updates the list
 test('Entering text into text input and clicking "Add it!" button adds the item to the list', () => {
-    // This test will simulate user actions: entering text into the input field and clicking the "Add it!" button.
-    // After the button click, it will verify that the new item has been added to the list of todos by checking the rendered output.
+    const myList = render(<MyList theList={toDos} />);
+    const input = myList.getByPlaceholderText('Type an item here');
+    const button = myList.getByText("Add it!");
+
+    fireEvent.change(input, { target: { value: "Renew Passport" } });
+    fireEvent.click(button);
+
+    // Wait for any asynchronous operations in the component to complete
+    waitFor(() => {
+        const list = myList.getByRole("list");
+        const items = within(list).queryAllByRole("listitem"); // Assuming each item has a 'listitem' role
+        const lastItem = items[items.length - 1]; // Get the last item in the list
+
+        if (!lastItem) {
+            console.error("No last item found. Items:", items);
+        } else {
+            expect(lastItem).toHaveTextContent("Renew Passport");
+        }
+    });
 });
 
-// Test to confirm that clicking the "Finished the list!" button clears the entire todo list
+
 test('Clicking on "Finished the list!" will delete all elements in the list', () => {
-    // This test will simulate the user action of clicking the "Finished the list!" button.
-    // It will then check to ensure that all items have been removed from the list, expecting the list's length to be 0.
+    const myList = render(<MyList theList={toDos} />);
+    const button = myList.getByText("Finished the list!");
+
+    fireEvent.click(button);
+
+    const list = myList.queryAllByRole("listitem");
+    expect(list.length).toBe(0);
 });
