@@ -1,10 +1,4 @@
-In Progress:
-- Create two branches: `main` and `solution`
-- Add Selenium steps
-- Shorten/summarize docker section
-
-
-# Connect React frontend to Express API backend
+# Review
 
 We're going to continue where we left off with the [full stack review](https://git.generalassemb.ly/ModernEngineering/full-stack-react) lesson. The goal here is to add tests to our application then containerize it using docker.
 
