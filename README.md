@@ -278,6 +278,7 @@ To begin, please open a new terminal window and navigate to the `/final-review/r
     - After you've verified that everything works, run `CTRL+C` in the terminal to stop running the React app.
 4.  Create a `tests` folder in the `src` directory: `mkdir tests`
 5.  Within the new directory, make a subdirectory called `e2e`: `mkdir tests/e2e`, then create a new file called `selenium-todos.test.js`: `touch tests/e2e/selenium-todos.test.js` which will be our test file.
+6. Run the selenium test. Only run our `selenium-todos.test.js` file enter the command in another terminal or you can run the command `npm test -- --testPathPattern=selenium-todos.test.js`.
 
 ## Selenium Dependency Setup
 In the `selenium-todos.test.js` file, we'll need to import `selenium-webdriver`.
@@ -287,7 +288,60 @@ const selenium = require('selenium-webdriver');
 
 # Selenium Testing
 
-####------------ NEED Steps here
+### Test 1: Verifying the Header Text
+
+Purpose: This test checks if the page contains an <h1> tag with the specific text "Things I should stop procrastinating:".
+
+Steps:
+
+- Find the <h1> Element: Uses Selenium's findElement method with a CSS selector to locate the first <h1> tag on the page.
+- Retrieve the Element's Text: Gets the text content of the found <h1> element.
+- Assertion: Compares the retrieved text to the expected text. The test passes if they match, indicating the header contains the correct text.
+
+```js
+test(' should verify h1 text', async function () {
+    const h1Element = await driver.findElement(selenium.By.css('h1'));
+    const actualText = await h1Element.getText();
+    const expectedText = 'Things I should stop procrastinating:';
+
+    expect(actualText).toBe(expectedText);
+})
+```
+
+### Test 2: Adding an Item to the List
+
+Purpose: Tests if a user can add a new item ("Eat more ice cream") to a list through the UI and verifies that the item appears as expected.
+
+Steps:
+
+- Find the Input Element: Locates the text input field where a user can type a new item, identified by its placeholder text.
+- Enter Text with Delay: Simulates typing the text "Eat more ice cream" into the input field, character by character, with a short delay between each to mimic human typing.
+- Submit the New Item: Presses the RETURN key to submit the form or trigger the action that adds the new item to the list.
+- Verify the Addition: Finds all list items (<li>) and checks the text of the last item to ensure it matches the text that was entered. The test passes if the last item's text is "Eat more ice cream", indicating that the item was successfully added to the list.
+
+```js
+test('Add Item to List', async () => {
+    const inputElement = await driver.findElement(selenium.By.css('[placeholder="Type an item here"]'));
+
+    for (const char of 'Eat more ice cream') {
+        await inputElement.sendKeys(char);
+        await new Promise(resolve => setTimeout(resolve, 50)); // Add a delay of 50 milliseconds
+    }
+
+    await inputElement.sendKeys(selenium.Key.RETURN);
+    
+    const listItems = await driver.findElements(selenium.By.css('li'));
+    const lastItemText = await listItems[listItems.length - 1].getText();
+
+    expect(lastItemText).toBe('Eat more ice cream');
+});
+```
+
+
+### Test 3: This test checks that clicking the "Finished the list!" button (YOU DO)
+
+- successfully deletes all elements from the list, ensuring the list is empty afterwards.
+
 
 ## Dockerize the Todo App (Note: shorten lesson, go over additional docker commands)
 
