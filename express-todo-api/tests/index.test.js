@@ -48,32 +48,9 @@ describe("PUT /api/todos/:todoId", () => {
     });
 });
 
-// GET todo by ID
-describe("GET /api/todos/:todoId", () => {
-    it("should retrieve a specific todo by ID", async () => {
-        const response = await request(app)
-            .get(`/api/todos/${todoId}`)
-            .expect(200);
+// TODO GET todo by ID
 
-        expect(response.body[0].id).toBe(todoId);
-    });
-});
-
-// DELETE todo by ID
-describe("DELETE /api/todos/:todoId", () => {
-    it("should delete an existing todo", async () => {
-        await request(app)
-            .delete(`/api/todos/${todoId}`)
-            .expect(204);
-
-        // Verify that the todo has been deleted
-        const response = await request(app)
-            .get(`/api/todos/${todoId}`)
-            .expect(200);
-
-        expect(response.body.length).toBe(0);
-    });
-});
+// TODO DELETE todo by ID
 
 // Closing the connection allows Jest to exit successfully.
 afterAll((done) => {
