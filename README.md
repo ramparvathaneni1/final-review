@@ -290,12 +290,12 @@ const selenium = require('selenium-webdriver');
 
 ### Test 1: Verifying the Header Text
 
-Purpose: This test checks if the page contains an <h1> tag with the specific text "Things I should stop procrastinating:".
+Purpose: This test checks if the page contains an `<h1>` tag with the specific text "Things I should stop procrastinating:".
 
 Steps:
 
-- Find the <h1> Element: Uses Selenium's findElement method with a CSS selector to locate the first <h1> tag on the page.
-- Retrieve the Element's Text: Gets the text content of the found <h1> element.
+- Find the `<h1>` Element: Uses Selenium's findElement method with a CSS selector to locate the first `<h1>` tag on the page.
+- Retrieve the Element's Text: Gets the text content of the found `<h1>` element.
 - Assertion: Compares the retrieved text to the expected text. The test passes if they match, indicating the header contains the correct text.
 
 ```js
@@ -317,7 +317,7 @@ Steps:
 - Find the Input Element: Locates the text input field where a user can type a new item, identified by its placeholder text.
 - Enter Text with Delay: Simulates typing the text "Eat more ice cream" into the input field, character by character, with a short delay between each to mimic human typing.
 - Submit the New Item: Presses the RETURN key to submit the form or trigger the action that adds the new item to the list.
-- Verify the Addition: Finds all list items (<li>) and checks the text of the last item to ensure it matches the text that was entered. The test passes if the last item's text is "Eat more ice cream", indicating that the item was successfully added to the list.
+- Verify the Addition: Finds all list items (`<li>`) and checks the text of the last item to ensure it matches the text that was entered. The test passes if the last item's text is "Eat more ice cream", indicating that the item was successfully added to the list.
 
 ```js
 test('Add Item to List', async () => {
@@ -343,7 +343,9 @@ test('Add Item to List', async () => {
 - successfully deletes all elements from the list, ensuring the list is empty afterwards.
 
 
-## Dockerize the Todo App (Note: shorten lesson, go over additional docker commands)
+## Dockerize the Todo App
+
+Note: shorten lesson, go over additional docker commands
 
 Docker Commands:
 Command | Description
