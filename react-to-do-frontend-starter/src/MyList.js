@@ -21,7 +21,6 @@ function MyList() {
     const response = await fetch("http://127.0.0.1:3001/api/todos");
     const todos = await response.json();
     console.log("Todos from database", todos);
-
     setToDoItemArray(todos);
   }
 
@@ -32,30 +31,6 @@ function MyList() {
   useEffect(() => {
     getTodos();
   }, []);
-
-  return (
-    <div>
-      <h1 id="header">Things I should stop procrastinating:</h1>
-      <ul>{todoItems}</ul>
-      {newItem}
-      <form>
-        <input
-          type="text"
-          placeholder="Type an item here"
-          onChange={(e) => setNewItem(e.target.value)}
-          value={newItem}
-        />
-        <button onClick={createTodo}>Add it!</button>
-      </form>
-      <button
-        onClick={() => {
-          setToDoItemArray([]);
-        }}
-      >
-        Finished the list!
-      </button>
-    </div>
-  );
 
   async function createTodo(e) {
     e.preventDefault();
@@ -135,6 +110,30 @@ function MyList() {
       console.log(error);
     }
   }
+
+  return (
+    <div>
+      <h1 id="header">Things I should stop procrastinating:</h1>
+      <ul>{todoItems}</ul>
+      {newItem}
+      <form>
+        <input
+          type="text"
+          placeholder="Type an item here"
+          onChange={(e) => setNewItem(e.target.value)}
+          value={newItem}
+        />
+        <button onClick={createTodo}>Add it!</button>
+      </form>
+      <button
+        onClick={() => {
+          setToDoItemArray([]);
+        }}
+      >
+        Finished the list!
+      </button>
+    </div>
+  );
 }
 
 export default MyList;
