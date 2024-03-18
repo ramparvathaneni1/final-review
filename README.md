@@ -141,7 +141,7 @@ describe("PUT /api/todos/:todoId", () => {
 ```
 
 ####:muscle: You Do:
-We currently don't have a test for each endpoint. The goal for the next 15 minutes is to write a test for...
+We currently don't have a test for each endpoint. The goal for the next 30 minutes is to write a test for...
 <details>
 <summary>the READ (GET by ID)</summary>
 <br>
