@@ -96,13 +96,15 @@ function MyList() {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(itemToUpdate),
+      // body: JSON.stringify(itemToUpdate),
     };
+
     try {
       const response = await fetch(
         `http://127.0.0.1:3001/api/todos/${id}`,
         options
       );
+    
       const newToDoItemArray = [...toDoItemArray];
       newToDoItemArray[indexOfItem] = itemToUpdate;
       setToDoItemArray(newToDoItemArray);
