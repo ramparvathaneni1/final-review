@@ -25,9 +25,8 @@
     - [Create the Container network](#create-the-container-network)
     - [Create a Dockerfile for the Postgres Database](#create-a-dockerfile-for-the-postgres-database)
     - [Dockerfile for Node Express Backend](#dockerfile-for-node-express-backend)
-  - [Dockerfile for the React frontend](#dockerfile-for-the-react-frontend)
+    - [Dockerfile for the React frontend](#dockerfile-for-the-react-frontend)
   - [Debugging: To stop and remove all containers](#debugging-to-stop-and-remove-all-containers)
-  - [YOU DO](#you-do-1)
 
 We're going to start with a working application, add functional tests for the frontend and backend, and one end-to-end test for the entire application. We'll then containerize it using Docker.
 
@@ -439,21 +438,17 @@ If you get an error that the network already exists, proceed to the next step.
 
 3. To run the image in a container: `sudo docker run -d --name backend-container -p 3001:3001 --network todo-app backend`
 
-    - The `-p` flag defines the local port and the container port. These can be different.
-    - The `--name` flag lets us name the container
-    - `backend` is the name of the image
-    - To view the server logs remove the `-d` flag (quite mode) after `docker run`
-
-4. You can run `sudo docker ps` to check out the list of running containers.
+4. Run `sudo docker ps` to check out the list of running containers.
 
 5. Go to `localhost:3001` in the browser. We should see the same "Hi There" message as if running the app locally.
 
-    ![](./assets/hi-there.png)
+    ![alt text](./assets/hi-there.png)
 
-## Dockerfile for the React frontend
+6. Go to `http://localhost:3001/api/todos/` in your browser. You should see a list of todos.
 
-1. We've renamed the React todo app folder `frontend`.
-2. Create a `Dockerfile`: `touch Dockerfile`
+### Dockerfile for the React frontend
+
+1. In the `react-to-do-frontend-starter` there's a starter `Dockerfile`. Modify it as follows:
 
     ```dockerfile
     FROM node:alpine
@@ -475,42 +470,20 @@ If you get an error that the network already exists, proceed to the next step.
     # The command to start the server inside the container
     ```
 
-3. Add a `.dockerignore` file for files and folders we don't want to copy into the container:
+2. In your terminal, navigate to the `react-to-do-frontend-starter` folder and build the image: `sudo docker build . -t frontend`.
 
-    ```text
-    node_modules
-    npm-debug.log
-    ```
+3. To run the image in a container: `sudo docker run -d --name frontend-container -p 3000:3000 --network todo-app frontend`
 
-4. To build the image: `sudo docker build . -t frontend`. *Make sure you are running this build command from inside the `express-todo-api/frontend` folder.*
-
-    - The `-t` flag lets us tag the image so it's easier to find.
-
-5. To run the image in a container: `sudo docker run -d --name frontend-container -p 3000:3000 --network todo-app frontend`
-
-    - The `-p` flag defines the local port and the container port. These can be different.
-    - The `--name` flag lets us name the container
-    - `frontend` is the name of the image
-    - To view the server logs remove the `-d` flag after `docker run`
-
-6. Go to `localhost:3000` in the browser.
+4. Go to `localhost:3000` in the browser.
 
 ## Debugging: To stop and remove all containers
 
 If you get a message saying that a container name is already taken, you may need to stop and remove a container or two.
 
-1. Let's stop all running containers: `sudo docker stop $(sudo docker ps -a -q)`
-2. `sudo docker ps -a` will show all stopped containers.
-3. `sudo docker container prune` will remove all stopped containers.
+- To stop all running containers: `sudo docker stop $(sudo docker ps -a -q)`
+- To show all stopped containers: `sudo docker ps -a`
+- To remove all stopped containers: `sudo docker container prune`
+- To remove one container: `sudo docker rm -f [container-name-or-id]`
+- To remove all images: `sudo docker rmi $(sudo docker images -a -q)`
 
-    - If you're still having build issues it may help to remove all images: `sudo docker rmi $(sudo docker images -a -q)`
-
-<!-- 1. Let's stop and remove all containers: `sudo docker rm -f $(sudo docker ps -a -q)` -->
-
-<!--     - or try `sudo docker ps -aq | xargs docker stop | xargs docker rm` -->
-
-Also, if you get a message that post 5432 is in use, make sure to stop the local Postgres engine in your VM: `sudo service postgresql stop`
-
-## YOU DO
-
-Now that you have your containers orchestrated, try your Postman collection requests again.
+Also, if you get a message that post 5432 is in use, make sure to stop the local PostgreSQL service in your VM: `sudo service postgresql stop`
