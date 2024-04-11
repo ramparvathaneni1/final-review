@@ -1,10 +1,42 @@
 # Review
 
+- [Review](#review)
+  - [Start up your Node Express Backend](#start-up-your-node-express-backend)
+    - [Initial Setup](#initial-setup)
+  - [Setting up Testing for our API](#setting-up-testing-for-our-api)
+    - [What is Jest?](#what-is-jest)
+    - [Setup](#setup)
+    - [Testing Root Path](#testing-root-path)
+    - [GET All Todos](#get-all-todos)
+    - [POST (Create) a Todo](#post-create-a-todo)
+    - [PUT (Update) a Todo](#put-update-a-todo)
+      - [You Do](#you-do)
+  - [Setting up Component Testing with Jest for our React Frontend](#setting-up-component-testing-with-jest-for-our-react-frontend)
+    - [Test 1: Verifying Header Text](#test-1-verifying-header-text)
+    - [Test 2: Adding an Item to the List](#test-2-adding-an-item-to-the-list)
+      - [Test 3: Deleting All Items from the List](#test-3-deleting-all-items-from-the-list)
+  - [Setting up E2E Testing for our React Frontend](#setting-up-e2e-testing-for-our-react-frontend)
+    - [What is Selenium?](#what-is-selenium)
+    - [Setup](#setup-1)
+    - [Selenium Dependency Setup](#selenium-dependency-setup)
+    - [Selenium Testing](#selenium-testing)
+      - [Test 1: Verifying the Header Text](#test-1-verifying-the-header-text)
+      - [Test 2: Adding an Item to the List](#test-2-adding-an-item-to-the-list-1)
+      - [Test 3: This test checks that clicking the "Finished the list!" button (YOU DO)](#test-3-this-test-checks-that-clicking-the-finished-the-list-button-you-do)
+  - [Dockerize the Todo App](#dockerize-the-todo-app)
+  - [Create the Container network](#create-the-container-network)
+  - [Dockerfile the Postgres Database](#dockerfile-the-postgres-database)
+  - [Dockerfile for Node Express Backend](#dockerfile-for-node-express-backend)
+  - [Dockerfile for the React frontend](#dockerfile-for-the-react-frontend)
+  - [Debugging: To stop and remove all containers](#debugging-to-stop-and-remove-all-containers)
+  - [YOU DO](#you-do-1)
+
 We're going to continue where we left off with the [full stack review](https://git.generalassemb.ly/ModernEngineering/full-stack-react) lesson. The goal here is to add tests to our application then containerize it using docker.
 
 ## Start up your Node Express Backend
 
-#### Initial Setup
+### Initial Setup
+
 1. Open your terminal.
 2. To access the `mef` directory, please navigate to it from your home directory using the command `cd ~/mef`.
 3. Fork the repository named [final-review](https://git.generalassemb.ly/ModernEngineering/final-review) on the
@@ -30,40 +62,50 @@ command: `sudo kill -9 $(sudo lsof -t -i:3000)`.
 
 ## Setting up Testing for our API
 
-#### What is Jest?
+### What is Jest?
+
 In this review walkthrough, we'll be going over Jest and how to set it up to your node/express backend. Jest is an open-source testing framework developed by Facebook. It is designed to be fast, easy to set up, and has built-in support for features like mocking, assertions, and code coverage. Jest is particularly well-suited for testing JavaScript applications, including Node.js backend code and front-end code written in frameworks like React.
 
-#### Setup
+### Setup
+
 1. Let's go into our `express-todo-api` directory
 2. Install our testing dependencies: `npm install --save-dev jest supertest`
 3. Within the `express-todo-api/package.json` file, let's update the `"test"` script to call `"jest"`:
-```
+
+```javascript
 "scripts": {
     "test": "jest",
     "start": "nodemon index.js"
 },  
 ```
+
 4. Create a new directory called `tests`: `mkdir tests`
 5. Within the new directory, we'll make a new file called `index.test.js`: `touch tests/index.test.js`
 6. In order for our tests to work, we'll need to require our dependencies:
-```
+
+```javascript
 // index.test.js
 
 // DEPENDENCIES
 const request = require("supertest");
 const {app, server, pool} = require("../index");
 ```
+
 7. In order for these imports to be successful, we'll have to export them from the `index.js` file. Replace `app.listen("3001", () => {});` with the following:
-```
+
+```javascript
 const server = () => app.listen("3001", () => {
 });
 server()
 
 module.exports = {app, server, pool};
 ```
-#### Testing Root Path
+
+### Testing Root Path
+
 Back in the `index.test.js`, let's test the root path to verify that everything is configured correctly:
-```
+
+```javascript
 describe("Test the root path", () => {
     test('It should respond with "Hi There!"', async () => {
         const response = await request(app).get("/");
@@ -72,12 +114,15 @@ describe("Test the root path", () => {
     });
 });
 ```
-In the terminal, run `npm run test` 
+
+In the terminal, run `npm run test`.
 To halt the server: `CTRL+C`
+
 ![image info](./assets/test1.png)
 
-At this point, we might not want to halt the server every time we create a new test. In order to prevent this, we're going to add a `afterAll` method at the bottom of the `index.test.js` file that'll close the server and the pool to resolve any asynchornous operations.
-```
+At this point, we might not want to halt the server every time we create a new test. In order to prevent this, we're going to add a `afterAll` method at the bottom of the `index.test.js` file that'll close the server and the pool to resolve any asynchronous operations.
+
+```javascript
 // Closing the connection allows Jest to exit successfully.
 afterAll((done) => {
     server.close()
@@ -86,9 +131,11 @@ afterAll((done) => {
 });
 ```
 
-#### GET All Todos
+### GET All Todos
+
 The next test we'll write is the GET all route. Add the following code to the index.test.js under the previous test that'll check the status of the GET route. If the status is 200, that means the call was successful. We'll then check to see if the length of the response payload is greater than zero. Once you've added the code, run `npm run test` in the terminal.
-```
+
+```javascript
 // GET all todos
 describe("GET /api/todos", () => {
     it("should retrieve a list of todos", async () => {
@@ -100,9 +147,12 @@ describe("GET /api/todos", () => {
     });
 });
 ```
-#### POST (Create) a Todo
+
+### POST (Create) a Todo
+
 The next method we will work on is the POST, which will create a new todo. The goal is to be able to pass an object with new data, that will then be passed to our POST `/api/todos` url. The test will expect a successful status (201). At the end of this function, we're going to save the new todo object ID to a variable called `todoID`, that we will use for future tests.
-```
+
+```javascript
 // POST (create) new todo
 let todoID;
 describe("POST /api/todos", () => {
@@ -118,9 +168,11 @@ describe("POST /api/todos", () => {
 });
 ```
 
-#### PUT (Update) a Todo
+### PUT (Update) a Todo
+
 Now we want a test for our update functionality. Take a look at the code below, what is it doing? It's creating a new object `updatedTodoData` then sending that data to the endpoint as a PUT request. The ID that's being passed into the endpoint is the `todoID` that we declared in the POST test. If all goes well, we expect a 200 status code (typically updates should be 201, but the API has been setup to have a status code of 200). The test also expects a return of `Todo modified with ID: ${todoId}`.
-```
+
+```javascript
 describe("PUT /api/todos/:todoId", () => {
     it("should update a todo by ID", async () => {
         const updatedTodoData = {title: "Updated Todo", done: true};
@@ -134,13 +186,15 @@ describe("PUT /api/todos/:todoId", () => {
 });
 ```
 
-####:muscle: You Do:
+#### You Do
+
 We currently don't have a test for each endpoint. The goal for the next 30 minutes is to write a test for...
+
 <details>
 <summary>the READ (GET by ID)</summary>
 <br>
 
-```
+```javascript
 describe("GET /api/todos/:todoId", () => {
     it("should retrieve a specific todo by ID", async () => {
         const response = await request(app)
@@ -151,12 +205,13 @@ describe("GET /api/todos/:todoId", () => {
     });
 });
 ```
+
 </details>
 <details>
 <summary>the DELETE (DELETE by ID) endpoint</summary>
 <br>
 
-```
+```javascript
 describe("DELETE /api/todos/:todoId", () => {
     it("should delete an existing todo", async () => {
         await request(app)
@@ -172,9 +227,10 @@ describe("DELETE /api/todos/:todoId", () => {
     });
 });
 ```
+
 </details>
 
-:eyes: *No peaking at the solutions until you're done!*
+*No peaking at the solutions until you're done!*
 
 ## Setting up Component Testing with Jest for our React Frontend
 
@@ -193,9 +249,9 @@ The primary objectives and benefits of component testing include:
 - Streamlining Development and Collaboration
 - Enhancing User Experience
 
-### Let's break down what each test does:
+Let's break down what each test does
 
-1. Test 1: Verifying Header Text
+### Test 1: Verifying Header Text
 
 - This test checks that the MyList component renders a header with the specified text "Things I should stop procrastinating:".
 - It renders the MyList component with a prop theList that contains an array of to-do items (toDos).
@@ -210,7 +266,7 @@ test('Header contains the text "Things I should stop procrastinating:"', () => {
 });
 ```
 
-2. Test 2: Adding an Item to the List
+### Test 2: Adding an Item to the List
 
 - This test simulates adding a new to-do item ("Renew Passport") to the list.
 - It locates the input field by its placeholder text and the button by its text content.
@@ -236,7 +292,7 @@ test('Entering text into text input and clicking "Add it!" button adds the item 
 });
 ```
 
-3. Test 3: Deleting All Items from the List
+#### Test 3: Deleting All Items from the List
 
 - This test simulates clearing the to-do list by clicking a button labeled "Finished the list!".
 - After clicking the button, it checks that there are no items left in the list by looking for elements with the role "listitem" and expecting their count to be 0.
@@ -257,10 +313,12 @@ To run the test use `npm run test` command.
 
 ## Setting up E2E Testing for our React Frontend
 
-#### What is Selenium?
+### What is Selenium?
+
 Selenium is a powerful tool commonly used for automating web browsers, particularly for testing web applications. React is a popular JavaScript library for building user interfaces, including web applications. Combining Selenium with a React application allows for automated testing of the user interface, ensuring functionality, performance, and user experience.
 
-#### Setup
+### Setup
+
 To begin, please open a new terminal window and navigate to the `/final-review/react-to-do-frontend-starter` folder: 
 
 1. In the terminal, run `cd ~/mef/final-review/react-to-do-frontend-starter`
@@ -274,15 +332,16 @@ To begin, please open a new terminal window and navigate to the `/final-review/r
 5.  Within the new directory, make a subdirectory called `e2e`: `mkdir tests/e2e`, then create a new file called `selenium-todos.test.js`: `touch tests/e2e/selenium-todos.test.js` which will be our test file.
 6. Run the selenium test. Only run our `selenium-todos.test.js` file enter the command in another terminal or you can run the command `npm test -- --testPathPattern=selenium-todos.test.js`.
 
-## Selenium Dependency Setup
+### Selenium Dependency Setup
+
 In the `selenium-todos.test.js` file, we'll need to import `selenium-webdriver`.
 ```
 const selenium = require('selenium-webdriver');
 ```
 
-# Selenium Testing
+### Selenium Testing
 
-### Test 1: Verifying the Header Text
+#### Test 1: Verifying the Header Text
 
 Purpose: This test checks if the page contains an `<h1>` tag with the specific text "Things I should stop procrastinating:".
 
@@ -302,7 +361,7 @@ test(' should verify h1 text', async function () {
 })
 ```
 
-### Test 2: Adding an Item to the List
+#### Test 2: Adding an Item to the List
 
 Purpose: Tests if a user can add a new item ("Eat more ice cream") to a list through the UI and verifies that the item appears as expected.
 
@@ -331,15 +390,11 @@ test('Add Item to List', async () => {
 });
 ```
 
+#### Test 3: This test checks that clicking the "Finished the list!" button (YOU DO)
 
-### Test 3: This test checks that clicking the "Finished the list!" button (YOU DO)
-
-- successfully deletes all elements from the list, ensuring the list is empty afterwards.
-
+- Successfully deletes all elements from the list, ensuring the list is empty afterwards.
 
 ## Dockerize the Todo App
-
-Note: shorten lesson, go over additional docker commands
 
 Docker Commands:
 Command | Description
@@ -396,9 +451,9 @@ We'll need to create a container network for your containers to talk to each oth
 
 3. To build the image (if you're in the `backend/db` directory): `sudo docker build . -t db`. *Make sure you are running this build command from inside the `starter_todo_app/backend/db` folder.*
 
-5. To run the image in a container: `sudo docker run -d --name db-container -p 5432:5432 --network todo-app db`
+4. To run the image in a container: `sudo docker run -d --name db-container -p 5432:5432 --network todo-app db`
 
-6. To confirm that we created the table and added some todos:
+5. To confirm that we created the table and added some todos:
 
     - `sudo docker exec -it db-container psql todo_app_db -U postgres`
         - This will get us into the container and enter the `psql` shell
@@ -410,7 +465,7 @@ We'll need to create a container network for your containers to talk to each oth
 ## Dockerfile for Node Express Backend
 
 1. Note that inside the `starter_todo_app`, we've renamed the node express todo app folder `backend`.
-1. Create a `Dockerfile` in the `starter_todo_app/backend` folder: `touch Dockerfile`
+2. Create a `Dockerfile` in the `starter_todo_app/backend` folder: `touch Dockerfile`
 
     ```dockerfile
     FROM node:alpine
@@ -432,35 +487,33 @@ We'll need to create a container network for your containers to talk to each oth
     # The command to start the server inside the container
     ```
 
-1. Add a `.dockerignore` file for files and folders we don't want to copy into the container:
-
+3. Add a `.dockerignore` file for files and folders we don't want to copy into the container:
     ```
     node_modules
     npm-debug.log
     ```
 
-1. To build the image: `sudo docker build . -t backend`. *Make sure you are running this build command from inside the `starter_todo_app/backend` folder.*
+4. To build the image: `sudo docker build . -t backend`. *Make sure you are running this build command from inside the `starter_todo_app/backend` folder.*
 
     - The `-t` flag lets us tag the image so it's easier to find.
 
-1. To run the image in a container: `sudo docker run -d --name backend-container -p 3001:3001 --network todo-app backend`
+5. To run the image in a container: `sudo docker run -d --name backend-container -p 3001:3001 --network todo-app backend`
 
     - The `-p` flag defines the local port and the container port. These can be different.
     - The `--name` flag lets us name the container
     - `backend` is the name of the image
     - To view the server logs remove the `-d` flag (quite mode) after `docker run`
 
-1. You can run `sudo docker ps` to check out the list of running containers.
+6. You can run `sudo docker ps` to check out the list of running containers.
 
-2. Go to `localhost:3001` in the browser. We should see the same "Hi There" message as if running the app locally.
+7. Go to `localhost:3001` in the browser. We should see the same "Hi There" message as if running the app locally.
 
     ![](./assets/hi-there.png)
-
 
 ## Dockerfile for the React frontend
 
 1. We've renamed the React todo app folder `frontend`.
-1. Create a `Dockerfile`: `touch Dockerfile`
+2. Create a `Dockerfile`: `touch Dockerfile`
 
     ```dockerfile
     FROM node:alpine
@@ -482,25 +535,25 @@ We'll need to create a container network for your containers to talk to each oth
     # The command to start the server inside the container
     ```
 
-1. Add a `.dockerignore` file for files and folders we don't want to copy into the container:
+3. Add a `.dockerignore` file for files and folders we don't want to copy into the container:
 
-    ```
+    ```text
     node_modules
     npm-debug.log
     ```
 
-1. To build the image: `sudo docker build . -t frontend`. *Make sure you are running this build command from inside the `starter_todo_app/frontend` folder.*
+4. To build the image: `sudo docker build . -t frontend`. *Make sure you are running this build command from inside the `starter_todo_app/frontend` folder.*
 
     - The `-t` flag lets us tag the image so it's easier to find.
 
-1. To run the image in a container: `sudo docker run -d --name frontend-container -p 3000:3000 --network todo-app frontend`
+5. To run the image in a container: `sudo docker run -d --name frontend-container -p 3000:3000 --network todo-app frontend`
 
     - The `-p` flag defines the local port and the container port. These can be different.
     - The `--name` flag lets us name the container
     - `frontend` is the name of the image
     - To view the server logs remove the `-d` flag after `docker run`
 
-2. Go to `localhost:3000` in the browser.
+6. Go to `localhost:3000` in the browser.
 
 ## Debugging: To stop and remove all containers
 
@@ -516,7 +569,7 @@ If you get a message saying that a container name is already taken, you may need
 
 <!--     - or try `sudo docker ps -aq | xargs docker stop | xargs docker rm` -->
 
-#### Also, if you get a message that post 5432 is in use, make sure to stop the local Postgres engine in your VM: `sudo service postgresql stop`
+Also, if you get a message that post 5432 is in use, make sure to stop the local Postgres engine in your VM: `sudo service postgresql stop`
 
 ## YOU DO
 
