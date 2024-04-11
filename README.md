@@ -412,7 +412,8 @@ If you get an error that the network already exists, proceed to the next step.
 
 ### Dockerfile for Node Express Backend
 
-1. There's a `Dockerfile` in the `express-todo-api` folder. Modify it as follows:
+1. The `index.js` in the backend currently points to the `localhost` hostname for the database and uses `postgres` as the password. Modify `index.js` to point to the `db-container` hostname and use `docker` as the password.
+2. There's a `Dockerfile` in the `express-todo-api` folder. Modify it as follows:
 
     ```dockerfile
     FROM node:alpine
@@ -434,17 +435,17 @@ If you get an error that the network already exists, proceed to the next step.
     # The command to start the server inside the container
     ```
 
-2. In your terminal, go into the `express-todo-api` folder and build the image: `sudo docker build . -t backend`.
+3. In your terminal, go into the `express-todo-api` folder and build the image: `sudo docker build . -t backend`.
 
-3. To run the image in a container: `sudo docker run -d --name backend-container -p 3001:3001 --network todo-app backend`
+4. To run the image in a container: `sudo docker run -d --name backend-container -p 3001:3001 --network todo-app backend`
 
-4. Run `sudo docker ps` to check out the list of running containers.
+5. Run `sudo docker ps` to check out the list of running containers.
 
-5. Go to `localhost:3001` in the browser. We should see the same "Hi There" message as if running the app locally.
+6. Go to `localhost:3001` in the browser. We should see the same "Hi There" message as if running the app locally.
 
     ![alt text](./assets/hi-there.png)
 
-6. Go to `http://localhost:3001/api/todos/` in your browser. You should see a list of todos.
+7. Go to `http://localhost:3001/api/todos/` in your browser. You should see a list of todos.
 
 ### Dockerfile for the React frontend
 
