@@ -10,9 +10,9 @@ const Pool = require("pg").Pool;
 // This creates a new connection to our database. Postgres listens on port 5432 by default
 const pool = new Pool({
     user: "postgres",
-    host: "localhost",
+    host: "db-container",
     database: "todo_app_db",
-    password: "postgres",
+    password: "docker",
     port: 5432,
 });
 
