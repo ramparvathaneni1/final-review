@@ -1,11 +1,9 @@
 # Review
 
 - [Review](#review)
-  - [Start up your Node Express Backend](#start-up-your-node-express-backend)
-    - [Initial Setup](#initial-setup)
-  - [Setting up Testing for our API](#setting-up-testing-for-our-api)
-    - [What is Jest?](#what-is-jest)
-    - [Setup](#setup)
+  - [Initial Setup](#initial-setup)
+  - [Reviewing Testing for our API](#reviewing-testing-for-our-api)
+  - [Test script](#test-script)
     - [Testing Root Path](#testing-root-path)
     - [GET All Todos](#get-all-todos)
     - [POST (Create) a Todo](#post-create-a-todo)
@@ -17,7 +15,7 @@
       - [Test 3: Deleting All Items from the List](#test-3-deleting-all-items-from-the-list)
   - [Setting up E2E Testing for our React Frontend](#setting-up-e2e-testing-for-our-react-frontend)
     - [What is Selenium?](#what-is-selenium)
-    - [Setup](#setup-1)
+    - [Setup](#setup)
     - [Selenium Dependency Setup](#selenium-dependency-setup)
     - [Selenium Testing](#selenium-testing)
       - [Test 1: Verifying the Header Text](#test-1-verifying-the-header-text)
@@ -33,9 +31,7 @@
 
 We're going to continue where we left off with the [full stack review](https://git.generalassemb.ly/ModernEngineering/full-stack-react) lesson. The goal here is to add tests to our application then containerize it using docker.
 
-## Start up your Node Express Backend
-
-### Initial Setup
+## Initial Setup
 
 1. Open your terminal.
 2. To access the `mef` directory, please navigate to it from your home directory using the command `cd ~/mef`.
@@ -51,53 +47,35 @@ We're going to continue where we left off with the [full stack review](https://g
    can use the following commands: `cd final-review/express-todo-api/`.
 8. To reset the existing database using the `psql` command, you can use the following
    command: `psql -U postgres -d todo_app_db < db/todo.sql`.
-9. To add dependencies to our project, use the `npm install` or `npm i` command.
-10. To open the express-todo-api project in VSCode, use the command `code .`. After opening the project, you can initiate the server by opening the VS Code terminal and executing the command `npm run start`. The server is set up to listen on port `3001`.
+9. To install dependencies to our project, use the `npm install` command.
+10. To open the express-todo-api project in VSCode, use the command `code .`.
 
-NOTE: If you get a message that a port is in use, you can kill it with this
-command: `sudo kill -9 $(sudo lsof -t -i:3000)`.
+NOTE: If you get a message that a port is in use, you can [kill it](https://tecadmin.net/kill-process-on-specific-port/) with this
+command: `sudo kill -9 $(sudo lsof -t -i:3001)`.
 
-- Replace `3000` with the port number you want to stop.
-- [Reference](https://tecadmin.net/kill-process-on-specific-port/)
+## Reviewing Testing for our API
 
-## Setting up Testing for our API
+In this review walkthrough, we'll be going over Jest and how to set it up to your node/express backend.
 
-### What is Jest?
+Install your testing dependencies for Jest and Supertest: `npm install jest supertest`
 
-In this review walkthrough, we'll be going over Jest and how to set it up to your node/express backend. Jest is an open-source testing framework developed by Facebook. It is designed to be fast, easy to set up, and has built-in support for features like mocking, assertions, and code coverage. Jest is particularly well-suited for testing JavaScript applications, including Node.js backend code and front-end code written in frameworks like React.
+## Test script
 
-### Setup
-
-1. Let's go into our `express-todo-api` directory
-2. Install our testing dependencies: `npm install --save-dev jest supertest`
-3. Within the `express-todo-api/package.json` file, let's update the `"test"` script to call `"jest"`:
+In the `express-todo-api/tests` directory, there is a file called  `index.test.js`. The file begins by declaring dependencies: `app`, `server`, and `pool` from our `index.js`, and `supertest`.
 
 ```javascript
-"scripts": {
-    "test": "jest",
-    "start": "nodemon index.js"
-},  
-```
-
-4. Create a new directory called `tests`: `mkdir tests`
-5. Within the new directory, we'll make a new file called `index.test.js`: `touch tests/index.test.js`
-6. In order for our tests to work, we'll need to require our dependencies:
-
-```javascript
-// index.test.js
+// tests/index.test.js
 
 // DEPENDENCIES
 const request = require("supertest");
 const {app, server, pool} = require("../index");
 ```
 
-7. In order for these imports to be successful, we'll have to export them from the `index.js` file. Replace `app.listen("3001", () => {});` with the following:
+In order for the last three imports to be successful, we have to export them from the `index.js` file.
+
 
 ```javascript
-const server = () => app.listen("3001", () => {
-});
-server()
-
+// index.js
 module.exports = {app, server, pool};
 ```
 
@@ -116,11 +94,10 @@ describe("Test the root path", () => {
 ```
 
 In the terminal, run `npm run test`.
-To halt the server: `CTRL+C`
 
 ![image info](./assets/test1.png)
 
-At this point, we might not want to halt the server every time we create a new test. In order to prevent this, we're going to add a `afterAll` method at the bottom of the `index.test.js` file that'll close the server and the pool to resolve any asynchronous operations.
+In order to halt the server and exit back to the terminal prompt after the test runs, we add an `afterAll` method at the bottom of the `index.test.js` file that'll close the server and the pool to resolve any asynchronous operations.
 
 ```javascript
 // Closing the connection allows Jest to exit successfully.
@@ -133,7 +110,7 @@ afterAll((done) => {
 
 ### GET All Todos
 
-The next test we'll write is the GET all route. Add the following code to the index.test.js under the previous test that'll check the status of the GET route. If the status is 200, that means the call was successful. We'll then check to see if the length of the response payload is greater than zero. Once you've added the code, run `npm run test` in the terminal.
+The next test we'll write is the `GET /api/todos` route. If the response status is 200, that means the call was successful. We'll then check to see if the length of the response payload is greater than zero.
 
 ```javascript
 // GET all todos
@@ -150,7 +127,7 @@ describe("GET /api/todos", () => {
 
 ### POST (Create) a Todo
 
-The next method we will work on is the POST, which will create a new todo. The goal is to be able to pass an object with new data, that will then be passed to our POST `/api/todos` url. The test will expect a successful status (201). At the end of this function, we're going to save the new todo object ID to a variable called `todoID`, that we will use for future tests.
+The next is the `POST /api/todos` method which will create a new todo. The goal is to pass an object with new todo data, convert it to JSON, and pass that that in the request body. The test will expect a successful status (201). At the end of this function, we save the new todo object ID to a variable called `todoID` that we will use for future tests.
 
 ```javascript
 // POST (create) new todo
@@ -170,7 +147,7 @@ describe("POST /api/todos", () => {
 
 ### PUT (Update) a Todo
 
-Now we want a test for our update functionality. Take a look at the code below, what is it doing? It's creating a new object `updatedTodoData` then sending that data to the endpoint as a PUT request. The ID that's being passed into the endpoint is the `todoID` that we declared in the POST test. If all goes well, we expect a 200 status code (typically updates should be 201, but the API has been setup to have a status code of 200). The test also expects a return of `Todo modified with ID: ${todoId}`.
+We want a test for our update functionality. The following code creates a new object `updatedTodoData` consisting of the updated todo data. That object is converted to JSON, then sent in the body of a PUT request. The `todoID` is the same one that we declared in the POST test. We append the `todoID` to the end of the path to indicate which todo should be updated. If all goes well, we expect a 200 status cod.e.The test also expects a response body of `Todo modified with ID: ${todoId}`.
 
 ```javascript
 describe("PUT /api/todos/:todoId", () => {
@@ -188,10 +165,13 @@ describe("PUT /api/todos/:todoId", () => {
 
 #### You Do
 
-We currently don't have a test for each endpoint. The goal for the next 30 minutes is to write a test for...
+We currently don't have a test for each endpoint. The goal for the next 30 minutes is to write tests for
+
+- the `GET /api/todos/:todoId` endpoint
+- the `DELETE /api/todos/:todoId` endpoint
 
 <details>
-<summary>the READ (GET by ID)</summary>
+<summary>No peeking at the solutions until you're done!</summary>
 <br>
 
 ```javascript
@@ -205,11 +185,6 @@ describe("GET /api/todos/:todoId", () => {
     });
 });
 ```
-
-</details>
-<details>
-<summary>the DELETE (DELETE by ID) endpoint</summary>
-<br>
 
 ```javascript
 describe("DELETE /api/todos/:todoId", () => {
@@ -227,10 +202,7 @@ describe("DELETE /api/todos/:todoId", () => {
     });
 });
 ```
-
 </details>
-
-*No peaking at the solutions until you're done!*
 
 ## Setting up Component Testing with Jest for our React Frontend
 
