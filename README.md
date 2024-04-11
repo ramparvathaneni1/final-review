@@ -24,7 +24,7 @@
   - [Dockerize the Todo App](#dockerize-the-todo-app)
     - [Create the Container network](#create-the-container-network)
     - [Create a Dockerfile for the Postgres Database](#create-a-dockerfile-for-the-postgres-database)
-  - [Dockerfile for Node Express Backend](#dockerfile-for-node-express-backend)
+    - [Dockerfile for Node Express Backend](#dockerfile-for-node-express-backend)
   - [Dockerfile for the React frontend](#dockerfile-for-the-react-frontend)
   - [Debugging: To stop and remove all containers](#debugging-to-stop-and-remove-all-containers)
   - [YOU DO](#you-do-1)
@@ -411,10 +411,9 @@ If you get an error that the network already exists, proceed to the next step.
 
     ![](./assets/docker-psql.png)
 
-## Dockerfile for Node Express Backend
+### Dockerfile for Node Express Backend
 
-1. Note that inside the `express-todo-api`, we've renamed the node express todo app folder `backend`.
-2. Create a `Dockerfile` in the `express-todo-api/backend` folder: `touch Dockerfile`
+1. There's a `Dockerfile` in the `express-todo-api` folder. Modify it as follows:
 
     ```dockerfile
     FROM node:alpine
@@ -436,26 +435,18 @@ If you get an error that the network already exists, proceed to the next step.
     # The command to start the server inside the container
     ```
 
-3. Add a `.dockerignore` file for files and folders we don't want to copy into the container:
-    ```
-    node_modules
-    npm-debug.log
-    ```
+2. In your terminal, go into the `express-todo-api` folder and build the image: `sudo docker build . -t backend`.
 
-4. To build the image: `sudo docker build . -t backend`. *Make sure you are running this build command from inside the `express-todo-api/backend` folder.*
-
-    - The `-t` flag lets us tag the image so it's easier to find.
-
-5. To run the image in a container: `sudo docker run -d --name backend-container -p 3001:3001 --network todo-app backend`
+3. To run the image in a container: `sudo docker run -d --name backend-container -p 3001:3001 --network todo-app backend`
 
     - The `-p` flag defines the local port and the container port. These can be different.
     - The `--name` flag lets us name the container
     - `backend` is the name of the image
     - To view the server logs remove the `-d` flag (quite mode) after `docker run`
 
-6. You can run `sudo docker ps` to check out the list of running containers.
+4. You can run `sudo docker ps` to check out the list of running containers.
 
-7. Go to `localhost:3001` in the browser. We should see the same "Hi There" message as if running the app locally.
+5. Go to `localhost:3001` in the browser. We should see the same "Hi There" message as if running the app locally.
 
     ![](./assets/hi-there.png)
 
