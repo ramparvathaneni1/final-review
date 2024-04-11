@@ -3,7 +3,7 @@
 - [Review](#review)
   - [Initial Setup](#initial-setup)
   - [Reviewing Testing for our API](#reviewing-testing-for-our-api)
-  - [Test script](#test-script)
+    - [Test script](#test-script)
     - [Testing Root Path](#testing-root-path)
     - [GET All Todos](#get-all-todos)
     - [POST (Create) a Todo](#post-create-a-todo)
@@ -22,14 +22,14 @@
       - [Test 2: Adding an Item to the List](#test-2-adding-an-item-to-the-list-1)
       - [Test 3: This test checks that clicking the "Finished the list!" button (YOU DO)](#test-3-this-test-checks-that-clicking-the-finished-the-list-button-you-do)
   - [Dockerize the Todo App](#dockerize-the-todo-app)
-  - [Create the Container network](#create-the-container-network)
-  - [Dockerfile the Postgres Database](#dockerfile-the-postgres-database)
+    - [Create the Container network](#create-the-container-network)
+    - [Create a Dockerfile for the Postgres Database](#create-a-dockerfile-for-the-postgres-database)
   - [Dockerfile for Node Express Backend](#dockerfile-for-node-express-backend)
   - [Dockerfile for the React frontend](#dockerfile-for-the-react-frontend)
   - [Debugging: To stop and remove all containers](#debugging-to-stop-and-remove-all-containers)
   - [YOU DO](#you-do-1)
 
-We're going to continue where we left off with the [full stack review](https://git.generalassemb.ly/ModernEngineering/full-stack-react) lesson. The goal here is to add tests to our application then containerize it using docker.
+We're going to start with a working application, add functional tests for the frontend and backend, and one end-to-end test for the entire application. We'll then containerize it using Docker.
 
 ## Initial Setup
 
@@ -59,7 +59,7 @@ In this review walkthrough, we'll be going over Jest and how to set it up to you
 
 Install your testing dependencies for Jest and Supertest: `npm install jest supertest`
 
-## Test script
+### Test script
 
 In the `express-todo-api/tests` directory, there is a file called  `index.test.js`. The file begins by declaring dependencies: `app`, `server`, and `pool` from our `index.js`, and `supertest`.
 
@@ -72,7 +72,6 @@ const {app, server, pool} = require("../index");
 ```
 
 In order for the last three imports to be successful, we have to export them from the `index.js` file.
-
 
 ```javascript
 // index.js
@@ -368,43 +367,21 @@ test('Add Item to List', async () => {
 
 ## Dockerize the Todo App
 
-Docker Commands:
-Command | Description
---------|------------
-sudo service postgresql start | Start the PostgreSQL service on your system.
-sudo service postgresql stop | Stop the PostgreSQL service on your system.
-sudo service docker start | Starts the Docker service on your system. Docker must be running to manage containers and images.
-sudo docker network create <network_name> | This Docker command creates a new network. Docker networks provide a way for Docker containers to communicate with each other directly and also with the outside world. They can be especially useful in microservices architecture.
-sudo docker ps | Lists all currently running Docker containers: container ID, image used, when the container was created, the status, ports, and name.
-sudo docker ps -a | Lists all Docker containers, including those that are currently running and those that have stopped. This is useful for seeing a complete history of containers on your system.
-sudo docker stop <container_id> | This command will stop the container that is currently running.
-sudo docker start <container_id> | Restarts a previously created and stopped Docker container identified by its container_id.
-sudo docker rm -f <container_id> | This command forcefully removes a Docker container specified by its container_id. The -f flag stands for force, and it ensures that the container is stopped and then removed.
-sudo docker rmi <image_name> | Removes a Docker image from your local storage. image_name is the name of the image you want to remove. Images are templates used to create containers and are stored locally once pulled from a registry like Docker Hub.
-sudo docker inspect <image_name> | Displays detailed information in JSON format about a Docker image specified by image-name. It includes information like the image's layers, tags, and configuration details.
-sudo docker logs <container_id> | This command fetches the logs of a Docker container. It's useful for debugging and understanding the behavior of applications running inside containers.
-sudo docker network ls | Lists all networks created in Docker on your system. This can include default networks like bridge, host, and none, along with any custom networks you've created.
-sudo docker network rm <network_name> | Removes a Docker network specified by network_name. Containers must be disconnected from the network before it can be removed.
-sudo docker image prune --all --force | Remove all the docker images.
+Now it's time to containerize the application. Refer to the [docker-commands.md](docker-commands.md) file for a table of Docker commands.
 
-1. At this point, your Docker should be running and Postgres is turned off. If not, here are the steps:
+Make sure you stop all running instances of node and stop the PostgreSQL server using the command `sudo service postgresql stop`.
 
-    - To stop postgres in the VM run `sudo service postgresql stop`
-        - We want to stop the VM version of Postgresql since Docker will also want to use the default port (5432)
-    - To start Docker run `sudo service docker start`
-    - Clone down this repo and open it in VS Code
-
-## Create the Container network
+### Create the Container network
 
 We'll need to create a container network for your containers to talk to each other. Containers in the same container network can resolve each others' host names by their container name.
 
 `sudo docker network create todo-app`
 
-## Dockerfile the Postgres Database
+If you get an error that the network already exists, proceed to the next step.
 
-1. Note that inside the `starter_todo_app`, we've renamed the node express todo app folder `backend`.
+### Create a Dockerfile for the Postgres Database
 
-2. Inside the `starter_todo_app/backend/db` folder create a `Dockerfile` (from inside the `backend` folder): `touch db/Dockerfile`
+1. Inside the `express-todo-api/db` folder there is a starter `Dockerfile`. Modify it as follows to build an image for the PostgreSQL database.
 
     ```dockerfile
     FROM postgres
@@ -421,11 +398,11 @@ We'll need to create a container network for your containers to talk to each oth
     # This will create the todos table and add some todos
     ```
 
-3. To build the image (if you're in the `backend/db` directory): `sudo docker build . -t db`. *Make sure you are running this build command from inside the `starter_todo_app/backend/db` folder.*
+2. Go into the `db` directory in your terminal and build the image: `sudo docker build . -t db`.
 
-4. To run the image in a container: `sudo docker run -d --name db-container -p 5432:5432 --network todo-app db`
+3. To run the image in a container: `sudo docker run -d --name db-container -p 5432:5432 --network todo-app db`
 
-5. To confirm that we created the table and added some todos:
+4. To confirm that we created the table and added some todos:
 
     - `sudo docker exec -it db-container psql todo_app_db -U postgres`
         - This will get us into the container and enter the `psql` shell
@@ -436,8 +413,8 @@ We'll need to create a container network for your containers to talk to each oth
 
 ## Dockerfile for Node Express Backend
 
-1. Note that inside the `starter_todo_app`, we've renamed the node express todo app folder `backend`.
-2. Create a `Dockerfile` in the `starter_todo_app/backend` folder: `touch Dockerfile`
+1. Note that inside the `express-todo-api`, we've renamed the node express todo app folder `backend`.
+2. Create a `Dockerfile` in the `express-todo-api/backend` folder: `touch Dockerfile`
 
     ```dockerfile
     FROM node:alpine
@@ -465,7 +442,7 @@ We'll need to create a container network for your containers to talk to each oth
     npm-debug.log
     ```
 
-4. To build the image: `sudo docker build . -t backend`. *Make sure you are running this build command from inside the `starter_todo_app/backend` folder.*
+4. To build the image: `sudo docker build . -t backend`. *Make sure you are running this build command from inside the `express-todo-api/backend` folder.*
 
     - The `-t` flag lets us tag the image so it's easier to find.
 
@@ -514,7 +491,7 @@ We'll need to create a container network for your containers to talk to each oth
     npm-debug.log
     ```
 
-4. To build the image: `sudo docker build . -t frontend`. *Make sure you are running this build command from inside the `starter_todo_app/frontend` folder.*
+4. To build the image: `sudo docker build . -t frontend`. *Make sure you are running this build command from inside the `express-todo-api/frontend` folder.*
 
     - The `-t` flag lets us tag the image so it's easier to find.
 
