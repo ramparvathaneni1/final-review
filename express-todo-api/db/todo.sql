@@ -1,6 +1,3 @@
-DROP TABLE todos;
-DROP TABLE users;
-
 CREATE TABLE todos
 (
     ID    SERIAL PRIMARY KEY,
