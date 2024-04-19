@@ -28,7 +28,7 @@ describe('My Selenium Tests', function () {
 
         for (const char of 'Eat more ice cream') {
             await inputElement.sendKeys(char);
-            await new Promise(resolve => setTimeout(resolve, 50)); // Add a delay of 50 milliseconds
+            await new Promise(resolve => setTimeout(resolve, 200)); // Add a delay of 50 milliseconds
         }
 
         await inputElement.sendKeys(selenium.Key.RETURN);
@@ -45,20 +45,22 @@ describe('My Selenium Tests', function () {
     test('Clicking on "Finished the list!" will delete all elements in the list', async () => {
         // Locate the "Finished the list!" button by its text content using XPath.
         // This assumes the button uniquely contains the text "Finished the list!".
-    
-        // Click on the "Finished the list!" button to trigger the deletion of all list items.
+        const finishTheListBtn = await driver.findElement(selenium.By.xpath("//button[normalize-space()='Finished the list!']"));
 
+        // Click on the "Finished the list!" button to trigger the deletion of all list items.
+        await finishTheListBtn.click();
         // Wait for 1 second to allow the application to process the click event and update the UI.
         // Note: It's generally better to use explicit waits to wait for a specific condition
         // rather than using sleep, as it makes the test more reliable and usually faster.
-    
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Find all list item elements (li) to check the current state of the list.
         // This locates all li elements, assuming each to-do item is rendered as a list item.
-    
-
+        const listOfItems = await driver.findElements(selenium.By.css("ul li"));
+        
         // Assert that the length of the listItems is 0, meaning there are no items in the list,
         // which should be the case after clicking the "Finished the list!" button.
+        expect(listOfItems.length).toBe(0);
     });
 
 });

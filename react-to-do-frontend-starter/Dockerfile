@@ -1,11 +1,17 @@
-# Select the node:alpine image as the base for the Docker container.
+FROM node:alpine
+# This is the image we'll use as the base
 
-# Establish /usr/src/app as the working directory inside the container.
+WORKDIR /usr/src/app
+# Create app directory
 
-# Copy all current directory contents into the container's working directory.
+COPY . .
+# Copy the app to the directory
 
-# Execute npm install to install the project's npm dependencies.
+RUN npm install
+# Install dependencies
 
-# Set the container to expose port 3000 for external access.
+EXPOSE 3000
+# The port we want the container to open (i.e. run on)
 
-# Define the command to start the application with npm run start.
+CMD [ "npm", "run", "start" ]
+# The command to start the server inside the container
